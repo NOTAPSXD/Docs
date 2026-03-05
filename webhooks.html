@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Webhooks — botliy Docs</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="mob-toggle" onclick="toggleSidebar()"><i class='bx bx-menu' style="font-size:18px"></i></button>
+  <a href="../index.html" class="topbar-logo">
+    <div class="logo-mark"><i class='bx bx-bot'></i></div>
+    <span class="logo-text">botliy</span>
+    <span class="logo-ver">v1</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="../index.html" class="topbar-nav-link"><i class='bx bx-home'></i> Intro</a>
+    <a href="authentication.html" class="topbar-nav-link"><i class='bx bx-key'></i> Auth</a>
+    <a href="endpoints.html" class="topbar-nav-link"><i class='bx bx-code-curly'></i> Endpoints</a>
+    <a href="webhooks.html" class="topbar-nav-link current"><i class='bx bx-broadcast'></i> Webhooks</a>
+    <a href="examples.html" class="topbar-nav-link"><i class='bx bx-terminal'></i> Examples</a>
+  </nav>
+  <div class="topbar-right">
+    <div class="topbar-pill"><div class="live-dot"></div>&nbsp;API Online</div>
+    <a href="https://botliy.online" class="btn btn-ghost" target="_blank"><i class='bx bx-link-external'></i> Website</a>
+    <a href="https://botliy.online/bots/new" class="btn btn-amber" target="_blank"><i class='bx bx-plus'></i> Add Bot</a>
+  </div>
+</header>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-title">Overview</div>
+      <a href="../index.html" class="nav-link"><i class='bx bx-home-smile'></i> Introduction</a>
+      <a href="authentication.html" class="nav-link"><i class='bx bx-key'></i> Authentication</a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">API Reference</div>
+      <a href="endpoints.html#post-stats" class="nav-link"><i class='bx bx-upload'></i> Post Stats <span class="method-tag tag-post">POST</span></a>
+      <a href="endpoints.html#get-stats" class="nav-link"><i class='bx bx-bar-chart-alt-2'></i> Get Stats <span class="method-tag tag-get">GET</span></a>
+      <a href="endpoints.html#get-votes" class="nav-link"><i class='bx bx-up-arrow-circle'></i> Get Votes <span class="method-tag tag-get">GET</span></a>
+      <a href="endpoints.html#get-check" class="nav-link"><i class='bx bx-check-circle'></i> Check Vote <span class="method-tag tag-get">GET</span></a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">Webhooks</div>
+      <a href="#overview" class="nav-link active" onclick="setActive(this)"><i class='bx bx-broadcast'></i> Overview</a>
+      <a href="#setup" class="nav-link" onclick="setActive(this)"><i class='bx bx-cog'></i> Setup</a>
+      <a href="#payload" class="nav-link" onclick="setActive(this)"><i class='bx bx-data'></i> Payload Schema</a>
+      <a href="#security" class="nav-link" onclick="setActive(this)"><i class='bx bx-shield'></i> Verification</a>
+      <a href="#retry" class="nav-link" onclick="setActive(this)"><i class='bx bx-refresh'></i> Retry Policy</a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">Examples</div>
+      <a href="examples.html" class="nav-link"><i class='bx bx-terminal'></i> Code Examples</a>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <main class="content">
+
+      <div class="page-head">
+        <div class="eyebrow"><i class='bx bx-broadcast'></i>&nbsp;Real-time Events</div>
+        <h1 class="h1">Webhook <em>Integration</em></h1>
+        <p class="page-desc">Receive instant HTTP notifications when users vote for your bot — no polling required.</p>
+      </div>
+
+      <!-- OVERVIEW -->
+      <div id="overview" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-broadcast'></i></div>
+          <h2>Overview</h2>
+        </div>
+        <p>Instead of polling <code>GET /votes</code> to detect new votes, configure a webhook URL on your bot's edit page. botliy will deliver an HTTP <code>POST</code> request to your server the moment a vote is cast — in real time.</p>
+        <ul>
+          <li>Webhooks are delivered within <strong>seconds</strong> of a vote being cast.</li>
+          <li>Your endpoint must be publicly accessible over HTTPS.</li>
+          <li>Respond with <strong>any 2xx status</strong> to acknowledge receipt.</li>
+          <li>Responses that take longer than <strong>10 seconds</strong> will time out.</li>
+        </ul>
+        <div class="callout info">
+          <i class='bx bx-info-circle callout-icon'></i>
+          <div>
+            <b>Webhooks vs. Polling</b>
+            <span>Webhooks are the recommended way to handle vote events. Polling the votes endpoint is less efficient and subject to rate limits.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETUP -->
+      <div id="setup" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-cog'></i></div>
+          <h2>Setup</h2>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-n">1</div>
+            <div>
+              <div class="step-title">Create an HTTP endpoint</div>
+              <div class="step-body">Your server needs a route that accepts <code>POST</code> requests with a JSON body. It must be reachable from the public internet over HTTPS.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-n">2</div>
+            <div>
+              <div class="step-title">Register your webhook URL</div>
+              <div class="step-body">Go to your bot's edit page on botliy, paste your endpoint URL into the <strong>Webhook URL</strong> field, and save.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-n">3</div>
+            <div>
+              <div class="step-title">Copy your Webhook Secret</div>
+              <div class="step-body">A <strong>Webhook Secret</strong> is generated alongside your URL. Store it securely — you'll use it to verify incoming requests.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-n">4</div>
+            <div>
+              <div class="step-title">Verify &amp; handle events</div>
+              <div class="step-body">Compare the incoming <code>Authorization</code> header to your secret. If they match, process the event and respond with <code>200 OK</code>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAYLOAD -->
+      <div id="payload" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-data'></i></div>
+          <h2>Payload Schema</h2>
+        </div>
+
+        <div class="endpoint">
+          <div class="ep-head">
+            <span class="method in">INCOMING POST</span>
+            <span class="ep-path">your-configured-webhook-url</span>
+          </div>
+          <div class="ep-body">
+            <p class="ep-desc">botliy sends JSON to your endpoint. Verify the <code>Authorization</code> header matches your webhook secret before processing.</p>
+
+            <div class="code-label">Headers Delivered to Your Endpoint</div>
+            <div class="cw">
+              <div class="ch">
+                <span class="cl">HTTP Headers</span>
+                <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+              </div>
+              <div class="cb">Content-Type: application/json
+Authorization: your_webhook_secret_here</div>
+            </div>
+
+            <div class="code-label">JSON Payload</div>
+            <div class="cw">
+              <div class="ch">
+                <span class="cl">JSON</span>
+                <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+              </div>
+              <div class="cb">{
+  <span class="p">"bot"</span>:  <span class="s">"123456789012345678"</span>,  <span class="c">// Your bot's Discord ID</span>
+  <span class="p">"user"</span>: <span class="s">"876543210987654321"</span>,  <span class="c">// Voter's Discord ID</span>
+  <span class="p">"type"</span>: <span class="s">"upvote"</span>                  <span class="c">// Event type</span>
+}</div>
+            </div>
+
+            <div class="code-label">Payload Fields</div>
+            <div class="param-wrap">
+              <table class="param-tbl">
+                <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><code>bot</code></td>
+                    <td><span class="type">string</span></td>
+                    <td>The Discord snowflake ID of your bot.</td>
+                  </tr>
+                  <tr>
+                    <td><code>user</code></td>
+                    <td><span class="type">string</span></td>
+                    <td>The Discord snowflake ID of the voter.</td>
+                  </tr>
+                  <tr>
+                    <td><code>type</code></td>
+                    <td><span class="type">string</span></td>
+                    <td>The event type — always <code>"upvote"</code> currently.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECURITY -->
+      <div id="security" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-shield'></i></div>
+          <h2>Verification</h2>
+        </div>
+        <p><strong>Always verify</strong> that incoming webhook requests actually come from botliy. Do this by comparing the <code>Authorization</code> header to your stored Webhook Secret.</p>
+
+        <div class="cw">
+          <div class="ch">
+            <span class="cl">Node.js verification example</span>
+            <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+          </div>
+          <div class="cb"><span class="f">app</span>.<span class="f">post</span>(<span class="s">'/botliy/webhook'</span>, (req, res) => {
+  <span class="k">const</span> secret = process.env.WEBHOOK_SECRET;
+
+  <span class="c">// Reject requests without the correct secret</span>
+  <span class="k">if</span> (req.headers.authorization !== secret) {
+    <span class="k">return</span> res.<span class="f">status</span>(<span class="n">401</span>).<span class="f">json</span>({ error: <span class="s">'Unauthorized'</span> });
+  }
+
+  <span class="c">// Safe to process the event</span>
+  <span class="k">const</span> { bot, user, type } = req.body;
+  console.<span class="f">log</span>(<span class="s">`User ${user} voted for bot ${bot}`</span>);
+
+  res.<span class="f">status</span>(<span class="n">200</span>).<span class="f">json</span>({ status: <span class="s">'ok'</span> });
+});</div>
+        </div>
+
+        <div class="callout warn">
+          <i class='bx bx-error callout-icon'></i>
+          <div>
+            <b>Never skip verification</b>
+            <span>Without checking the <code>Authorization</code> header, anyone could send fake vote events to your endpoint.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RETRY POLICY -->
+      <div id="retry" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-refresh'></i></div>
+          <h2>Retry Policy</h2>
+        </div>
+        <p>If your endpoint fails to respond with a 2xx status within 10 seconds, botliy will retry the delivery:</p>
+        <ul>
+          <li><strong>Attempt 1</strong> — immediately on vote</li>
+          <li><strong>Attempt 2</strong> — 1 minute after first failure</li>
+          <li><strong>Attempt 3</strong> — 5 minutes after second failure</li>
+        </ul>
+        <p>After 3 failed attempts, the event is dropped. Make your webhook handler idempotent — use the <code>user</code> + timestamp to deduplicate if retries are a concern.</p>
+      </div>
+
+      <div class="pager">
+        <a href="endpoints.html" class="pager-card">
+          <div class="pager-dir">← Previous</div>
+          <div class="pager-title">API Endpoints</div>
+        </a>
+        <a href="examples.html" class="pager-card next">
+          <div class="pager-dir">Next →</div>
+          <div class="pager-title">Code Examples</div>
+        </a>
+      </div>
+
+    </main>
+
+    <nav class="toc">
+      <div class="toc-head">On this page</div>
+      <a href="#overview" class="toc-item">Overview</a>
+      <a href="#setup" class="toc-item">Setup</a>
+      <a href="#payload" class="toc-item">Payload Schema</a>
+      <a href="#security" class="toc-item">Verification</a>
+      <a href="#retry" class="toc-item">Retry Policy</a>
+    </nav>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <div style="width:26px;height:26px;background:var(--amber);border-radius:7px;display:flex;align-items:center;justify-content:center;"><i class='bx bx-bot' style="font-size:13px;color:var(--ink)"></i></div>
+    botliy Developer Docs
+  </div>
+  <div class="footer-links">
+    <a href="https://botliy.online" class="footer-link" target="_blank">Website</a>
+    <a href="https://botliy.online/bots/new" class="footer-link" target="_blank">Add Bot</a>
+    <a href="#" class="footer-link">Discord</a>
+  </div>
+  <div class="footer-copy">© 2026 botliy · REST API v1</div>
+</footer>
+
+<script src="../assets/docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>API Endpoints — botliy Docs</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="mob-toggle" onclick="toggleSidebar()"><i class='bx bx-menu' style="font-size:18px"></i></button>
+  <a href="../index.html" class="topbar-logo">
+    <div class="logo-mark"><i class='bx bx-bot'></i></div>
+    <span class="logo-text">botliy</span>
+    <span class="logo-ver">v1</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="../index.html" class="topbar-nav-link"><i class='bx bx-home'></i> Intro</a>
+    <a href="authentication.html" class="topbar-nav-link"><i class='bx bx-key'></i> Auth</a>
+    <a href="endpoints.html" class="topbar-nav-link current"><i class='bx bx-code-curly'></i> Endpoints</a>
+    <a href="webhooks.html" class="topbar-nav-link"><i class='bx bx-broadcast'></i> Webhooks</a>
+    <a href="examples.html" class="topbar-nav-link"><i class='bx bx-terminal'></i> Examples</a>
+  </nav>
+  <div class="topbar-right">
+    <div class="topbar-pill"><div class="live-dot"></div>&nbsp;API Online</div>
+    <a href="https://botliy.online" class="btn btn-ghost" target="_blank"><i class='bx bx-link-external'></i> Website</a>
+    <a href="https://botliy.online/bots/new" class="btn btn-amber" target="_blank"><i class='bx bx-plus'></i> Add Bot</a>
+  </div>
+</header>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-title">Overview</div>
+      <a href="../index.html" class="nav-link"><i class='bx bx-home-smile'></i> Introduction</a>
+      <a href="authentication.html" class="nav-link"><i class='bx bx-key'></i> Authentication</a>
+      <a href="authentication.html#ratelimits" class="nav-link"><i class='bx bx-tachometer'></i> Rate Limits</a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">Endpoints</div>
+      <a href="#post-stats" class="nav-link active" onclick="setActive(this)">
+        <i class='bx bx-upload'></i> Post Stats
+        <span class="method-tag tag-post">POST</span>
+      </a>
+      <a href="#get-stats" class="nav-link" onclick="setActive(this)">
+        <i class='bx bx-bar-chart-alt-2'></i> Get Stats
+        <span class="method-tag tag-get">GET</span>
+      </a>
+      <a href="#get-votes" class="nav-link" onclick="setActive(this)">
+        <i class='bx bx-up-arrow-circle'></i> Get Votes
+        <span class="method-tag tag-get">GET</span>
+      </a>
+      <a href="#get-check" class="nav-link" onclick="setActive(this)">
+        <i class='bx bx-check-circle'></i> Check Vote
+        <span class="method-tag tag-get">GET</span>
+      </a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">More</div>
+      <a href="webhooks.html" class="nav-link"><i class='bx bx-broadcast'></i> Webhook Events</a>
+      <a href="examples.html" class="nav-link"><i class='bx bx-terminal'></i> Code Examples</a>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <main class="content">
+
+      <div class="page-head">
+        <div class="eyebrow"><i class='bx bx-code-curly'></i>&nbsp;API Reference</div>
+        <h1 class="h1">API <em>Endpoints</em></h1>
+        <p class="page-desc">All available REST endpoints. Base URL: <code>https://botliy.online</code></p>
+        <div class="url-bar">
+          <span class="url-label">Base URL</span>
+          <span class="url-val">https://botliy.online</span>
+          <button class="copy-url-btn" onclick="copyURL('https://botliy.online',this)"><i class='bx bx-copy'></i> Copy</button>
+        </div>
+      </div>
+
+      <!-- POST STATS -->
+      <div id="post-stats" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-upload'></i></div>
+          <h2>Post Stats</h2>
+        </div>
+
+        <div class="endpoint">
+          <div class="ep-head">
+            <span class="method post">POST</span>
+            <span class="ep-path">/api/bots/<span class="param">:id</span>/stats</span>
+          </div>
+          <div class="ep-body">
+            <p class="ep-desc">Post your bot's current server and shard count to botliy. Call this on a schedule — every 15–30 minutes is ideal.
+              <span class="auth-tag auth-y"><i class='bx bx-lock-alt'></i> Auth Required</span>
+            </p>
+
+            <div class="code-label">Path Parameters</div>
+            <div class="param-wrap">
+              <table class="param-tbl">
+                <thead><tr><th>Param</th><th>Type</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><code>id</code> <span class="req">required</span></td>
+                    <td><span class="type">string</span></td>
+                    <td>Your bot's Discord snowflake ID.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="code-label">Request Body</div>
+            <div class="param-wrap">
+              <table class="param-tbl">
+                <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><code>server_count</code> <span class="req">required</span></td>
+                    <td><span class="type">integer</span></td>
+                    <td>Total number of servers your bot is in.</td>
+                  </tr>
+                  <tr>
+                    <td><code>shard_count</code></td>
+                    <td><span class="type">integer</span></td>
+                    <td>Total number of shards. Omit if not sharding.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="code-label">Example Request Body</div>
+            <div class="cw">
+              <div class="ch">
+                <span class="cl">JSON</span>
+                <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+              </div>
+              <div class="cb">{
+  <span class="p">"server_count"</span>: <span class="n">1450</span>,
+  <span class="p">"shard_count"</span>: <span class="n">2</span>
+}</div>
+            </div>
+
+            <div class="code-label">Response Codes</div>
+            <div class="res-list">
+              <div class="res-item"><span class="status ok">200</span><span class="res-desc">Stats updated successfully.</span></div>
+              <div class="res-item"><span class="status er">401</span><span class="res-desc">Missing or invalid Authorization token.</span></div>
+              <div class="res-item"><span class="status er">404</span><span class="res-desc">Bot ID not found or not approved.</span></div>
+              <div class="res-item"><span class="status er">429</span><span class="res-desc">Rate limit exceeded.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rule">Get endpoints</div>
+
+      <!-- GET STATS -->
+      <div id="get-stats" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-bar-chart-alt-2'></i></div>
+          <h2>Get Stats</h2>
+        </div>
+
+        <div class="endpoint">
+          <div class="ep-head">
+            <span class="method get">GET</span>
+            <span class="ep-path">/api/bots/<span class="param">:id</span>/stats</span>
+          </div>
+          <div class="ep-body">
+            <p class="ep-desc">Retrieve a bot's registered server count and shard count from botliy.
+              <span class="auth-tag auth-n"><i class='bx bx-lock-open-alt'></i> Public</span>
+            </p>
+
+            <div class="code-label">Response</div>
+            <div class="cw">
+              <div class="ch">
+                <span class="cl">JSON</span>
+                <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+              </div>
+              <div class="cb">{
+  <span class="p">"error"</span>: <span class="k">false</span>,
+  <span class="p">"server_count"</span>: <span class="n">1450</span>,
+  <span class="p">"shard_count"</span>: <span class="n">2</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET VOTES -->
+      <div id="get-votes" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-up-arrow-circle'></i></div>
+          <h2>Get Votes</h2>
+        </div>
+
+        <div class="endpoint">
+          <div class="ep-head">
+            <span class="method get">GET</span>
+            <span class="ep-path">/api/bots/<span class="param">:id</span>/votes</span>
+          </div>
+          <div class="ep-body">
+            <p class="ep-desc">Returns a list of the 1,000 most recent votes for your bot, sorted by most recent first.
+              <span class="auth-tag auth-y"><i class='bx bx-lock-alt'></i> Auth Required</span>
+            </p>
+
+            <div class="code-label">Response</div>
+            <div class="cw">
+              <div class="ch">
+                <span class="cl">JSON</span>
+                <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+              </div>
+              <div class="cb">{
+  <span class="p">"error"</span>: <span class="k">false</span>,
+  <span class="p">"votes"</span>: [
+    {
+      <span class="p">"username"</span>: <span class="s">"Snowy"</span>,
+      <span class="p">"id"</span>: <span class="s">"123456789012345678"</span>,
+      <span class="p">"date"</span>: <span class="s">"2026-02-26T12:00:00.000Z"</span>
+    }
+  ]
+}</div>
+            </div>
+
+            <div class="code-label">Response Codes</div>
+            <div class="res-list">
+              <div class="res-item"><span class="status ok">200</span><span class="res-desc">Returns the vote list array.</span></div>
+              <div class="res-item"><span class="status er">401</span><span class="res-desc">Missing or invalid Authorization token.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHECK VOTE -->
+      <div id="get-check" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-check-circle'></i></div>
+          <h2>Check User Vote</h2>
+        </div>
+
+        <div class="endpoint">
+          <div class="ep-head">
+            <span class="method get">GET</span>
+            <span class="ep-path">/api/bots/<span class="param">:id</span>/check</span>
+          </div>
+          <div class="ep-body">
+            <p class="ep-desc">Check whether a specific user has voted for your bot in the last 12 hours.
+              <span class="auth-tag auth-y"><i class='bx bx-lock-alt'></i> Auth Required</span>
+            </p>
+
+            <div class="code-label">Query Parameters</div>
+            <div class="param-wrap">
+              <table class="param-tbl">
+                <thead><tr><th>Query Param</th><th>Type</th><th>Description</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><code>userId</code> <span class="req">required</span></td>
+                    <td><span class="type">string</span></td>
+                    <td>The Discord snowflake ID of the user to check.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="code-label">Example Request</div>
+            <div class="cw">
+              <div class="ch">
+                <span class="cl">URL</span>
+                <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+              </div>
+              <div class="cb">GET /api/bots/<span class="n">123456789012345678</span>/check?userId=<span class="n">876543210987654321</span></div>
+            </div>
+
+            <div class="code-label">Response</div>
+            <div class="cw">
+              <div class="ch">
+                <span class="cl">JSON</span>
+                <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+              </div>
+              <div class="cb">{
+  <span class="p">"error"</span>: <span class="k">false</span>,
+  <span class="p">"voted"</span>: <span class="n">1</span>  <span class="c">// 1 = voted in last 12h, 0 = not voted</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pager">
+        <a href="authentication.html" class="pager-card">
+          <div class="pager-dir">← Previous</div>
+          <div class="pager-title">Authentication &amp; Rate Limits</div>
+        </a>
+        <a href="webhooks.html" class="pager-card next">
+          <div class="pager-dir">Next →</div>
+          <div class="pager-title">Webhooks</div>
+        </a>
+      </div>
+
+    </main>
+
+    <nav class="toc">
+      <div class="toc-head">On this page</div>
+      <a href="#post-stats" class="toc-item">POST Stats</a>
+      <a href="#get-stats" class="toc-item">GET Stats</a>
+      <a href="#get-votes" class="toc-item">GET Votes</a>
+      <a href="#get-check" class="toc-item">Check Vote</a>
+    </nav>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <div style="width:26px;height:26px;background:var(--amber);border-radius:7px;display:flex;align-items:center;justify-content:center;"><i class='bx bx-bot' style="font-size:13px;color:var(--ink)"></i></div>
+    botliy Developer Docs
+  </div>
+  <div class="footer-links">
+    <a href="https://botliy.online" class="footer-link" target="_blank">Website</a>
+    <a href="https://botliy.online/bots/new" class="footer-link" target="_blank">Add Bot</a>
+    <a href="#" class="footer-link">Discord</a>
+  </div>
+  <div class="footer-copy">© 2026 botliy · REST API v1</div>
+</footer>
+
+<script src="../assets/docs.js"></script>
+</body>
+</html>

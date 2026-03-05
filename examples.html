@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Code Examples — botliy Docs</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="mob-toggle" onclick="toggleSidebar()"><i class='bx bx-menu' style="font-size:18px"></i></button>
+  <a href="../index.html" class="topbar-logo">
+    <div class="logo-mark"><i class='bx bx-bot'></i></div>
+    <span class="logo-text">botliy</span>
+    <span class="logo-ver">v1</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="../index.html" class="topbar-nav-link"><i class='bx bx-home'></i> Intro</a>
+    <a href="authentication.html" class="topbar-nav-link"><i class='bx bx-key'></i> Auth</a>
+    <a href="endpoints.html" class="topbar-nav-link"><i class='bx bx-code-curly'></i> Endpoints</a>
+    <a href="webhooks.html" class="topbar-nav-link"><i class='bx bx-broadcast'></i> Webhooks</a>
+    <a href="examples.html" class="topbar-nav-link current"><i class='bx bx-terminal'></i> Examples</a>
+  </nav>
+  <div class="topbar-right">
+    <div class="topbar-pill"><div class="live-dot"></div>&nbsp;API Online</div>
+    <a href="https://botliy.online" class="btn btn-ghost" target="_blank"><i class='bx bx-link-external'></i> Website</a>
+    <a href="https://botliy.online/bots/new" class="btn btn-amber" target="_blank"><i class='bx bx-plus'></i> Add Bot</a>
+  </div>
+</header>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-title">Overview</div>
+      <a href="../index.html" class="nav-link"><i class='bx bx-home-smile'></i> Introduction</a>
+      <a href="authentication.html" class="nav-link"><i class='bx bx-key'></i> Authentication</a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">API Reference</div>
+      <a href="endpoints.html" class="nav-link"><i class='bx bx-code-curly'></i> All Endpoints</a>
+      <a href="webhooks.html" class="nav-link"><i class='bx bx-broadcast'></i> Webhooks</a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">Code Examples</div>
+      <a href="#ex-nodejs" class="nav-link active" onclick="setActive(this)"><i class='bx bxl-nodejs'></i> Node.js</a>
+      <a href="#ex-typescript" class="nav-link" onclick="setActive(this)"><i class='bx bx-code-alt'></i> TypeScript</a>
+      <a href="#ex-python" class="nav-link" onclick="setActive(this)"><i class='bx bxl-python'></i> Python</a>
+      <a href="#ex-go" class="nav-link" onclick="setActive(this)"><i class='bx bx-code'></i> Go</a>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <main class="content">
+
+      <div class="page-head">
+        <div class="eyebrow"><i class='bx bx-terminal'></i>&nbsp;Full Working Examples</div>
+        <h1 class="h1">Code <em>Examples</em></h1>
+        <p class="page-desc">Complete, production-ready implementations in popular languages — stat posting + webhook handling combined.</p>
+      </div>
+
+      <div class="callout info">
+        <i class='bx bx-info-circle callout-icon'></i>
+        <div>
+          <b>Replace all placeholder values</b>
+          <span>Each example uses <code>YOUR_BOT_TOKEN</code>, <code>YOUR_BOTLIY_API_TOKEN</code>, <code>YOUR_BOT_ID</code>, <code>your_webhook_secret_here</code>, and a <code>VOTE_CHANNEL_ID</code>. Swap these for your real values before running.</span>
+        </div>
+      </div>
+
+      <!-- NODE.JS -->
+      <div id="ex-nodejs" class="section">
+        <div class="sec-head">
+          <div class="sec-icon" style="color:#6cc24a;"><i class='bx bxl-nodejs'></i></div>
+          <h2>Node.js — discord.js + express</h2>
+        </div>
+        <p>A full working bot that posts stats every 30 minutes and handles incoming vote webhooks. Uses <code>discord.js v14</code> and <code>express</code>.</p>
+
+        <div class="cw">
+          <div class="ch">
+            <span class="cl">index.js</span>
+            <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+          </div>
+          <div class="cb"><span class="c">// npm install discord.js express node-fetch</span>
+<span class="k">const</span> { Client, GatewayIntentBits, EmbedBuilder } = <span class="f">require</span>(<span class="s">'discord.js'</span>);
+<span class="k">const</span> express = <span class="f">require</span>(<span class="s">'express'</span>);
+<span class="k">const</span> fetch   = <span class="f">require</span>(<span class="s">'node-fetch'</span>);
+
+<span class="c">// ──────────────── CONFIG ────────────────</span>
+<span class="k">const</span> DISCORD_TOKEN    = <span class="s">"YOUR_BOT_TOKEN"</span>;
+<span class="k">const</span> BOTLIY_API_TOKEN = <span class="s">"YOUR_BOTLIY_API_TOKEN"</span>;
+<span class="k">const</span> BOT_ID           = <span class="s">"YOUR_BOT_ID"</span>;
+<span class="k">const</span> WEBHOOK_SECRET   = <span class="s">"your_webhook_secret_here"</span>;
+<span class="k">const</span> VOTE_CHANNEL_ID  = <span class="s">"123456789012345678"</span>;
+<span class="c">// ────────────────────────────────────────</span>
+
+<span class="k">const</span> client = <span class="k">new</span> <span class="f">Client</span>({ intents: [GatewayIntentBits.Guilds] });
+<span class="k">const</span> app    = <span class="f">express</span>();
+app.<span class="f">use</span>(express.<span class="f">json</span>());
+
+<span class="c">// ── Webhook handler ──</span>
+app.<span class="f">post</span>(<span class="s">'/botliy/webhook'</span>, <span class="k">async</span> (req, res) =&gt; {
+  <span class="k">if</span> (req.headers.authorization !== WEBHOOK_SECRET)
+    <span class="k">return</span> res.<span class="f">status</span>(<span class="n">401</span>).<span class="f">send</span>(<span class="s">"Unauthorized"</span>);
+
+  <span class="k">const</span> { user } = req.body;
+  <span class="k">const</span> channel   = client.channels.cache.<span class="f">get</span>(VOTE_CHANNEL_ID);
+
+  <span class="k">if</span> (channel) {
+    <span class="k">const</span> embed = <span class="k">new</span> <span class="f">EmbedBuilder</span>()
+      .<span class="f">setTitle</span>(<span class="s">"🎉 New Vote!"</span>)
+      .<span class="f">setDescription</span>(<span class="s">`&lt;@${user}&gt; just voted! Thanks ❤️`</span>)
+      .<span class="f">setColor</span>(<span class="s">"Blurple"</span>)
+      .<span class="f">addFields</span>(
+        { name: <span class="s">"👤 Voter"</span>, value: <span class="s">`&lt;@${user}&gt;`</span>, inline: <span class="k">true</span> },
+        { name: <span class="s">"⏰ Time"</span>,  value: <span class="s">`&lt;t:${Math.floor(Date.now()/1000)}:R&gt;`</span>, inline: <span class="k">true</span> }
+      );
+    <span class="k">await</span> channel.<span class="f">send</span>({ embeds: [embed] });
+  }
+  res.<span class="f">status</span>(<span class="n">200</span>).<span class="f">send</span>(<span class="s">"OK"</span>);
+});
+
+<span class="c">// ── Post stats every 30 min ──</span>
+client.<span class="f">once</span>(<span class="s">'ready'</span>, () =&gt; {
+  console.<span class="f">log</span>(<span class="s">`Logged in as ${client.user.tag}`</span>);
+  app.<span class="f">listen</span>(<span class="n">8999</span>, () =&gt; console.<span class="f">log</span>(<span class="s">'Webhook server on :8999'</span>));
+
+  setInterval(<span class="k">async</span> () =&gt; {
+    <span class="k">try</span> {
+      <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`https://botliy.online/api/bots/${BOT_ID}/stats`</span>, {
+        method:  <span class="s">'POST'</span>,
+        headers: { Authorization: BOTLIY_API_TOKEN, <span class="s">'Content-Type'</span>: <span class="s">'application/json'</span> },
+        body:    JSON.<span class="f">stringify</span>({ server_count: client.guilds.cache.size, shard_count: <span class="n">1</span> })
+      });
+    } <span class="k">catch</span> (e) { console.<span class="f">error</span>(<span class="s">"Stats error:"</span>, e); }
+  }, <span class="n">1800000</span>); <span class="c">// 30 min</span>
+});
+
+client.<span class="f">login</span>(DISCORD_TOKEN);</div>
+        </div>
+      </div>
+
+      <div class="rule">TypeScript</div>
+
+      <!-- TYPESCRIPT -->
+      <div id="ex-typescript" class="section">
+        <div class="sec-head">
+          <div class="sec-icon" style="color:#3178c6;"><i class='bx bx-code-alt'></i></div>
+          <h2>TypeScript — discord.js + express</h2>
+        </div>
+        <p>The same integration with full TypeScript types. Uses an interface for the webhook payload and typed request/response objects.</p>
+
+        <div class="cw">
+          <div class="ch">
+            <span class="cl">index.ts</span>
+            <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+          </div>
+          <div class="cb"><span class="k">import</span> { Client, GatewayIntentBits, EmbedBuilder, TextChannel } <span class="k">from</span> <span class="s">'discord.js'</span>;
+<span class="k">import</span> express, { Request, Response } <span class="k">from</span> <span class="s">'express'</span>;
+<span class="k">import</span> fetch <span class="k">from</span> <span class="s">'node-fetch'</span>;
+
+<span class="k">const</span> config = {
+  DISCORD_TOKEN:    <span class="s">"YOUR_BOT_TOKEN"</span>,
+  BOTLIY_API_TOKEN: <span class="s">"YOUR_BOTLIY_API_TOKEN"</span>,
+  BOT_ID:           <span class="s">"YOUR_BOT_ID"</span>,
+  WEBHOOK_SECRET:   <span class="s">"your_webhook_secret_here"</span>,
+  VOTE_CHANNEL_ID:  <span class="s">"123456789012345678"</span>,
+};
+
+<span class="k">interface</span> <span class="t">WebhookPayload</span> {
+  bot:  <span class="t">string</span>;
+  user: <span class="t">string</span>;
+  type: <span class="t">string</span>;
+}
+
+<span class="k">const</span> client = <span class="k">new</span> <span class="f">Client</span>({ intents: [GatewayIntentBits.Guilds] });
+<span class="k">const</span> app    = <span class="f">express</span>();
+app.<span class="f">use</span>(express.<span class="f">json</span>());
+
+app.<span class="f">post</span>(<span class="s">'/botliy/webhook'</span>, <span class="k">async</span> (req: <span class="t">Request</span>, res: <span class="t">Response</span>) =&gt; {
+  <span class="k">if</span> (req.headers.authorization !== config.WEBHOOK_SECRET)
+    <span class="k">return</span> res.<span class="f">status</span>(<span class="n">401</span>).<span class="f">json</span>({ error: <span class="s">'Unauthorized'</span> });
+
+  <span class="k">const</span> { user } = req.body <span class="k">as</span> <span class="t">WebhookPayload</span>;
+  <span class="k">const</span> channel   = client.channels.cache.<span class="f">get</span>(config.VOTE_CHANNEL_ID) <span class="k">as</span> <span class="t">TextChannel</span>;
+
+  <span class="k">if</span> (channel) {
+    <span class="k">await</span> channel.<span class="f">send</span>({
+      embeds: [
+        <span class="k">new</span> <span class="f">EmbedBuilder</span>()
+          .<span class="f">setTitle</span>(<span class="s">"🎉 New Vote!"</span>)
+          .<span class="f">setDescription</span>(<span class="s">`&lt;@${user}&gt; just voted!`</span>)
+          .<span class="f">setColor</span>(<span class="s">"Blurple"</span>)
+      ]
+    });
+  }
+  res.<span class="f">status</span>(<span class="n">200</span>).<span class="f">json</span>({ status: <span class="s">'ok'</span> });
+});
+
+client.<span class="f">once</span>(<span class="s">'ready'</span>, () =&gt; {
+  app.<span class="f">listen</span>(<span class="n">8999</span>);
+  setInterval(<span class="k">async</span> () =&gt; {
+    <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`https://botliy.online/api/bots/${config.BOT_ID}/stats`</span>, {
+      method:  <span class="s">'POST'</span>,
+      headers: { Authorization: config.BOTLIY_API_TOKEN, <span class="s">'Content-Type'</span>: <span class="s">'application/json'</span> },
+      body:    JSON.<span class="f">stringify</span>({ server_count: client.guilds.cache.size, shard_count: <span class="n">1</span> })
+    });
+  }, <span class="n">1800000</span>);
+});
+
+client.<span class="f">login</span>(config.DISCORD_TOKEN);</div>
+        </div>
+      </div>
+
+      <div class="rule">Python</div>
+
+      <!-- PYTHON -->
+      <div id="ex-python" class="section">
+        <div class="sec-head">
+          <div class="sec-icon" style="color:#ffd43b;"><i class='bx bxl-python'></i></div>
+          <h2>Python — discord.py + Flask</h2>
+        </div>
+        <p>Full implementation using <code>discord.py</code> for the bot and <code>Flask</code> for the webhook server, running concurrently via threads.</p>
+
+        <div class="cw">
+          <div class="ch">
+            <span class="cl">main.py</span>
+            <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+          </div>
+          <div class="cb"><span class="c"># pip install discord.py flask requests</span>
+<span class="k">import</span> discord, asyncio, requests
+<span class="k">from</span> flask <span class="k">import</span> Flask, request, jsonify
+<span class="k">from</span> threading <span class="k">import</span> Thread
+
+<span class="c"># ──────────────── CONFIG ────────────────</span>
+DISCORD_TOKEN    = <span class="s">"YOUR_BOT_TOKEN"</span>
+BOTLIY_API_TOKEN = <span class="s">"YOUR_BOTLIY_API_TOKEN"</span>
+BOT_ID           = <span class="s">"YOUR_BOT_ID"</span>
+WEBHOOK_SECRET   = <span class="s">"your_webhook_secret_here"</span>
+VOTE_CHANNEL_ID  = <span class="n">123456789012345678</span>
+<span class="c"># ────────────────────────────────────────</span>
+
+intents = discord.Intents.<span class="f">default</span>()
+client  = discord.<span class="f">Client</span>(intents=intents)
+app     = <span class="f">Flask</span>(__name__)
+
+<span class="p">@app.route</span>(<span class="s">'/botliy/webhook'</span>, methods=[<span class="s">'POST'</span>])
+<span class="k">def</span> <span class="f">webhook</span>():
+  <span class="k">if</span> request.headers.<span class="f">get</span>(<span class="s">'Authorization'</span>) != WEBHOOK_SECRET:
+    <span class="k">return</span> <span class="f">jsonify</span>({<span class="s">"error"</span>: <span class="s">"Unauthorized"</span>}), <span class="n">401</span>
+
+  user_id = request.json.<span class="f">get</span>(<span class="s">"user"</span>)
+  asyncio.<span class="f">run_coroutine_threadsafe</span>(
+    <span class="f">send_vote_msg</span>(user_id), client.loop
+  )
+  <span class="k">return</span> <span class="f">jsonify</span>({<span class="s">"status"</span>: <span class="s">"ok"</span>}), <span class="n">200</span>
+
+<span class="k">async def</span> <span class="f">send_vote_msg</span>(user_id):
+  channel = client.<span class="f">get_channel</span>(VOTE_CHANNEL_ID)
+  <span class="k">if</span> channel:
+    embed = discord.<span class="f">Embed</span>(
+      title=<span class="s">"🎉 New Vote!"</span>,
+      description=<span class="s">f"&lt;@{user_id}&gt; just voted!"</span>,
+      color=discord.Color.<span class="f">blurple</span>()
+    )
+    <span class="k">await</span> channel.<span class="f">send</span>(embed=embed)
+
+<span class="k">async def</span> <span class="f">post_stats_loop</span>():
+  <span class="k">await</span> client.<span class="f">wait_until_ready</span>()
+  <span class="k">while not</span> client.<span class="f">is_closed</span>():
+    requests.<span class="f">post</span>(
+      <span class="s">f"https://botliy.online/api/bots/{BOT_ID}/stats"</span>,
+      json={<span class="s">"server_count"</span>: <span class="f">len</span>(client.guilds), <span class="s">"shard_count"</span>: <span class="n">1</span>},
+      headers={<span class="s">"Authorization"</span>: BOTLIY_API_TOKEN}
+    )
+    <span class="k">await</span> asyncio.<span class="f">sleep</span>(<span class="n">1800</span>)  <span class="c"># 30 min</span>
+
+<span class="p">@client.event</span>
+<span class="k">async def</span> <span class="f">on_ready</span>():
+  client.loop.<span class="f">create_task</span>(<span class="f">post_stats_loop</span>())
+
+<span class="k">def</span> <span class="f">run_flask</span>():
+  app.<span class="f">run</span>(host=<span class="s">"0.0.0.0"</span>, port=<span class="n">8999</span>)
+
+<span class="k">if</span> __name__ == <span class="s">"__main__"</span>:
+  <span class="f">Thread</span>(target=run_flask).<span class="f">start</span>()
+  client.<span class="f">run</span>(DISCORD_TOKEN)</div>
+        </div>
+      </div>
+
+      <div class="rule">Go</div>
+
+      <!-- GO -->
+      <div id="ex-go" class="section">
+        <div class="sec-head">
+          <div class="sec-icon" style="color:#00add8;"><i class='bx bx-code'></i></div>
+          <h2>Go — discordgo + net/http</h2>
+        </div>
+        <p>High-performance implementation using the standard library for HTTP and <code>discordgo</code> for the Discord bot.</p>
+
+        <div class="cw">
+          <div class="ch">
+            <span class="cl">main.go</span>
+            <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+          </div>
+          <div class="cb"><span class="k">package</span> main
+
+<span class="k">import</span> (
+  <span class="s">"bytes"</span>
+  <span class="s">"encoding/json"</span>
+  <span class="s">"fmt"</span>
+  <span class="s">"net/http"</span>
+  <span class="s">"time"</span>
+  <span class="s">"github.com/bwmarrin/discordgo"</span>
+)
+
+<span class="k">const</span> (
+  BotToken        = <span class="s">"YOUR_BOT_TOKEN"</span>
+  BotliyAPIToken  = <span class="s">"YOUR_BOTLIY_API_TOKEN"</span>
+  BotID           = <span class="s">"YOUR_BOT_ID"</span>
+  WebhookSecret   = <span class="s">"your_webhook_secret_here"</span>
+  ChannelID       = <span class="s">"123456789012345678"</span>
+)
+
+<span class="k">type</span> <span class="t">VotePayload</span> <span class="k">struct</span> {
+  User <span class="t">string</span> <span class="s">`json:"user"`</span>
+  Bot  <span class="t">string</span> <span class="s">`json:"bot"`</span>
+  Type <span class="t">string</span> <span class="s">`json:"type"`</span>
+}
+
+<span class="k">func</span> <span class="f">main</span>() {
+  dg, _ := discordgo.<span class="f">New</span>(<span class="s">"Bot "</span> + BotToken)
+  dg.<span class="f">Open</span>()
+  <span class="k">defer</span> dg.<span class="f">Close</span>()
+
+  <span class="c">// Post stats every 30 min</span>
+  <span class="k">go func</span>() {
+    <span class="k">for</span> {
+      body, _ := json.<span class="f">Marshal</span>(map[<span class="t">string</span>]<span class="k">interface</span>{}{
+        <span class="s">"server_count"</span>: <span class="f">len</span>(dg.State.Guilds),
+        <span class="s">"shard_count"</span>:  <span class="n">1</span>,
+      })
+      req, _ := http.<span class="f">NewRequest</span>(<span class="s">"POST"</span>,
+        fmt.<span class="f">Sprintf</span>(<span class="s">"https://botliy.online/api/bots/%s/stats"</span>, BotID),
+        bytes.<span class="f">NewBuffer</span>(body),
+      )
+      req.Header.<span class="f">Set</span>(<span class="s">"Authorization"</span>, BotliyAPIToken)
+      req.Header.<span class="f">Set</span>(<span class="s">"Content-Type"</span>, <span class="s">"application/json"</span>)
+      http.DefaultClient.<span class="f">Do</span>(req)
+      time.<span class="f">Sleep</span>(<span class="n">30</span> * time.Minute)
+    }
+  }()
+
+  <span class="c">// Webhook handler</span>
+  http.<span class="f">HandleFunc</span>(<span class="s">"/botliy/webhook"</span>, <span class="k">func</span>(w http.ResponseWriter, r *http.Request) {
+    <span class="k">if</span> r.Header.<span class="f">Get</span>(<span class="s">"Authorization"</span>) != WebhookSecret {
+      http.<span class="f">Error</span>(w, <span class="s">"Unauthorized"</span>, http.StatusUnauthorized)
+      <span class="k">return</span>
+    }
+    <span class="k">var</span> p <span class="t">VotePayload</span>
+    json.<span class="f">NewDecoder</span>(r.Body).<span class="f">Decode</span>(&amp;p)
+
+    dg.<span class="f">ChannelMessageSendEmbed</span>(ChannelID, &amp;discordgo.MessageEmbed{
+      Title:       <span class="s">"🎉 New Vote!"</span>,
+      Description: fmt.<span class="f">Sprintf</span>(<span class="s">"&lt;@%s&gt; just voted!"</span>, p.User),
+      Color:       <span class="n">0xF59E0B</span>,
+    })
+    w.<span class="f">WriteHeader</span>(http.StatusOK)
+  })
+
+  http.<span class="f">ListenAndServe</span>(<span class="s">":8999"</span>, <span class="k">nil</span>)
+}</div>
+        </div>
+      </div>
+
+      <div class="pager">
+        <a href="webhooks.html" class="pager-card">
+          <div class="pager-dir">← Previous</div>
+          <div class="pager-title">Webhooks</div>
+        </a>
+        <a href="../index.html" class="pager-card next">
+          <div class="pager-dir">Back to start</div>
+          <div class="pager-title">Introduction</div>
+        </a>
+      </div>
+
+    </main>
+
+    <nav class="toc">
+      <div class="toc-head">On this page</div>
+      <a href="#ex-nodejs" class="toc-item">Node.js</a>
+      <a href="#ex-typescript" class="toc-item">TypeScript</a>
+      <a href="#ex-python" class="toc-item">Python</a>
+      <a href="#ex-go" class="toc-item">Go</a>
+    </nav>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <div style="width:26px;height:26px;background:var(--amber);border-radius:7px;display:flex;align-items:center;justify-content:center;"><i class='bx bx-bot' style="font-size:13px;color:var(--ink)"></i></div>
+    botliy Developer Docs
+  </div>
+  <div class="footer-links">
+    <a href="https://botliy.online" class="footer-link" target="_blank">Website</a>
+    <a href="https://botliy.online/bots/new" class="footer-link" target="_blank">Add Bot</a>
+    <a href="#" class="footer-link">Discord</a>
+  </div>
+  <div class="footer-copy">© 2026 botliy · REST API v1</div>
+</footer>
+
+<script src="../assets/docs.js"></script>
+</body>
+</html>

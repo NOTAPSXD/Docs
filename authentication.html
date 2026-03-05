@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Authentication — botliy Docs</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="mob-toggle" onclick="toggleSidebar()"><i class='bx bx-menu' style="font-size:18px"></i></button>
+  <a href="../index.html" class="topbar-logo">
+    <div class="logo-mark"><i class='bx bx-bot'></i></div>
+    <span class="logo-text">botliy</span>
+    <span class="logo-ver">v1</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="../index.html" class="topbar-nav-link"><i class='bx bx-home'></i> Intro</a>
+    <a href="authentication.html" class="topbar-nav-link current"><i class='bx bx-key'></i> Auth</a>
+    <a href="endpoints.html" class="topbar-nav-link"><i class='bx bx-code-curly'></i> Endpoints</a>
+    <a href="webhooks.html" class="topbar-nav-link"><i class='bx bx-broadcast'></i> Webhooks</a>
+    <a href="examples.html" class="topbar-nav-link"><i class='bx bx-terminal'></i> Examples</a>
+  </nav>
+  <div class="topbar-right">
+    <div class="topbar-pill"><div class="live-dot"></div>&nbsp;API Online</div>
+    <a href="https://botliy.online" class="btn btn-ghost" target="_blank"><i class='bx bx-link-external'></i> Website</a>
+    <a href="https://botliy.online/bots/new" class="btn btn-amber" target="_blank"><i class='bx bx-plus'></i> Add Bot</a>
+  </div>
+</header>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-title">Overview</div>
+      <a href="../index.html" class="nav-link"><i class='bx bx-home-smile'></i> Introduction</a>
+      <a href="../index.html#quickstart" class="nav-link"><i class='bx bx-rocket'></i> Quick Start</a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">On this page</div>
+      <a href="#authorization" class="nav-link active"><i class='bx bx-key'></i> Authorization</a>
+      <a href="#ratelimits" class="nav-link" onclick="setActive(this)"><i class='bx bx-tachometer'></i> Rate Limits</a>
+      <a href="#errors" class="nav-link" onclick="setActive(this)"><i class='bx bx-error-circle'></i> Error Codes</a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">API Reference</div>
+      <a href="endpoints.html#post-stats" class="nav-link"><i class='bx bx-upload'></i> Post Stats <span class="method-tag tag-post">POST</span></a>
+      <a href="endpoints.html#get-stats" class="nav-link"><i class='bx bx-bar-chart-alt-2'></i> Get Stats <span class="method-tag tag-get">GET</span></a>
+      <a href="endpoints.html#get-votes" class="nav-link"><i class='bx bx-up-arrow-circle'></i> Get Votes <span class="method-tag tag-get">GET</span></a>
+      <a href="endpoints.html#get-check" class="nav-link"><i class='bx bx-check-circle'></i> Check Vote <span class="method-tag tag-get">GET</span></a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">Webhooks &amp; Examples</div>
+      <a href="webhooks.html" class="nav-link"><i class='bx bx-broadcast'></i> Webhook Events</a>
+      <a href="examples.html" class="nav-link"><i class='bx bx-terminal'></i> Code Examples</a>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <main class="content">
+
+      <div class="page-head">
+        <div class="eyebrow"><i class='bx bx-lock-alt'></i>&nbsp;Security &amp; Limits</div>
+        <h1 class="h1">Auth &amp; <em>Rate Limits</em></h1>
+        <p class="page-desc">Everything you need to know about authenticating requests and respecting usage limits.</p>
+      </div>
+
+      <!-- AUTHORIZATION -->
+      <div id="authorization" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-key'></i></div>
+          <h2>Authorization</h2>
+        </div>
+
+        <p>All protected API requests require your bot's <strong>API Token</strong> sent in the <code>Authorization</code> HTTP header. You can generate or view your token from your bot's edit page under <strong>API Integrations</strong> (available after bot approval).</p>
+
+        <div class="cw">
+          <div class="ch">
+            <span class="cl">HTTP Header</span>
+            <button class="copy-btn" onclick="copyCode(this)"><i class='bx bx-copy'></i> Copy</button>
+          </div>
+          <div class="cb">Authorization: your_api_token_here</div>
+        </div>
+
+        <p>Tokens are <strong>per-bot</strong> — each bot has its own API token. Do not share tokens between bots or expose them in client-side code.</p>
+
+        <div class="callout sec">
+          <i class='bx bx-shield-plus callout-icon'></i>
+          <div>
+            <b>IP Whitelisting (Optional)</b>
+            <span>For enhanced security, whitelist up to <strong>5 IPv4/IPv6 addresses</strong> on the bot edit page. Requests with a valid token from an unrecognised IP will receive <code>403 Forbidden</code>. Whitelisting is disabled by default — a value of <code>0.0.0.0</code> means all IPs are allowed.</span>
+          </div>
+        </div>
+
+        <h3 style="font-family:var(--font-display);font-size:1.1rem;font-weight:700;color:var(--text);margin:24px 0 10px;letter-spacing:-0.3px;">Token Lifecycle</h3>
+        <ul>
+          <li>Tokens are generated after your bot is <strong>approved</strong> by the botliy team.</li>
+          <li>You can <strong>regenerate</strong> your token at any time from the bot edit page — old tokens are invalidated immediately.</li>
+          <li>Tokens do not expire unless regenerated or your bot is removed.</li>
+        </ul>
+      </div>
+
+      <!-- RATE LIMITS -->
+      <div id="ratelimits" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-tachometer'></i></div>
+          <h2>Rate Limits</h2>
+        </div>
+
+        <p>To maintain system stability, botliy applies global IP-based rate limiting across all API endpoints.</p>
+
+        <ul>
+          <li><strong>Global limit:</strong> 1 request per second, per IP address.</li>
+          <li>For stat-posting, use a fixed interval — every <strong>15–30 minutes</strong> is recommended.</li>
+          <li>Do not trigger stat posts on every guild join or leave event.</li>
+        </ul>
+
+        <div style="background:var(--card);border:1px solid var(--border-2);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:20px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="background:var(--card-2);">
+                <th style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border);">Scope</th>
+                <th style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border);">Limit</th>
+                <th style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);padding:10px 16px;text-align:left;border-bottom:1px solid var(--border);">Recommendation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:11px 16px;font-size:13px;color:var(--text-sub);border-bottom:1px solid var(--border);">Global (all endpoints)</td>
+                <td style="padding:11px 16px;font-size:13px;font-family:var(--font-mono);color:var(--amber);border-bottom:1px solid var(--border);">1 req/s per IP</td>
+                <td style="padding:11px 16px;font-size:13px;color:var(--text-sub);border-bottom:1px solid var(--border);">Add delays between requests</td>
+              </tr>
+              <tr>
+                <td style="padding:11px 16px;font-size:13px;color:var(--text-sub);">POST /stats</td>
+                <td style="padding:11px 16px;font-size:13px;font-family:var(--font-mono);color:var(--amber);">1 req/s per IP</td>
+                <td style="padding:11px 16px;font-size:13px;color:var(--text-sub);">Post every 15–30 min max</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout warn">
+          <i class='bx bx-error callout-icon'></i>
+          <div>
+            <b>Exceeding Rate Limits</b>
+            <span>Requests that exceed the rate limit receive <code>429 Too Many Requests</code>. Repeated violations may result in a temporary IP block.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ERROR CODES -->
+      <div id="errors" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-error-circle'></i></div>
+          <h2>Error Codes</h2>
+        </div>
+        <p>All errors return a JSON body with an <code>error</code> field. HTTP status codes are standard.</p>
+
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div class="res-item"><span class="status ok">200</span><span class="res-desc">Request succeeded.</span></div>
+          <div class="res-item"><span class="status er">400</span><span class="res-desc">Bad request — malformed JSON or missing required fields.</span></div>
+          <div class="res-item"><span class="status er">401</span><span class="res-desc">Unauthorized — missing or invalid Authorization token.</span></div>
+          <div class="res-item"><span class="status er">403</span><span class="res-desc">Forbidden — valid token but IP is not whitelisted.</span></div>
+          <div class="res-item"><span class="status er">404</span><span class="res-desc">Not found — bot ID does not exist or is not approved.</span></div>
+          <div class="res-item"><span class="status er">429</span><span class="res-desc">Too many requests — rate limit exceeded.</span></div>
+          <div class="res-item"><span class="status er">500</span><span class="res-desc">Internal server error — something went wrong on our end.</span></div>
+        </div>
+      </div>
+
+      <div class="pager">
+        <a href="../index.html" class="pager-card">
+          <div class="pager-dir">← Previous</div>
+          <div class="pager-title">Introduction</div>
+        </a>
+        <a href="endpoints.html" class="pager-card next">
+          <div class="pager-dir">Next →</div>
+          <div class="pager-title">API Endpoints</div>
+        </a>
+      </div>
+
+    </main>
+
+    <nav class="toc">
+      <div class="toc-head">On this page</div>
+      <a href="#authorization" class="toc-item">Authorization</a>
+      <a href="#ratelimits" class="toc-item">Rate Limits</a>
+      <a href="#errors" class="toc-item">Error Codes</a>
+    </nav>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-brand">
+    <div style="width:26px;height:26px;background:var(--amber);border-radius:7px;display:flex;align-items:center;justify-content:center;"><i class='bx bx-bot' style="font-size:13px;color:var(--ink)"></i></div>
+    botliy Developer Docs
+  </div>
+  <div class="footer-links">
+    <a href="https://botliy.online" class="footer-link" target="_blank">Website</a>
+    <a href="https://botliy.online/bots/new" class="footer-link" target="_blank">Add Bot</a>
+    <a href="#" class="footer-link">Discord</a>
+  </div>
+  <div class="footer-copy">© 2026 botliy · REST API v1</div>
+</footer>
+
+<script src="../assets/docs.js"></script>
+</body>
+</html>

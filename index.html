@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Introduction — botliy Docs</title>
+<meta name="description" content="Official botliy API documentation for Discord bot developers.">
+<link rel="stylesheet" href="assets/style.css">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <button class="mob-toggle" onclick="toggleSidebar()"><i class='bx bx-menu' style="font-size:18px"></i></button>
+  <a href="index.html" class="topbar-logo">
+    <div class="logo-mark"><i class='bx bx-bot'></i></div>
+    <span class="logo-text">botliy</span>
+    <span class="logo-ver">v1</span>
+  </a>
+  <nav class="topbar-nav">
+    <a href="index.html" class="topbar-nav-link current"><i class='bx bx-home'></i> Intro</a>
+    <a href="pages/authentication.html" class="topbar-nav-link"><i class='bx bx-key'></i> Auth</a>
+    <a href="pages/endpoints.html" class="topbar-nav-link"><i class='bx bx-code-curly'></i> Endpoints</a>
+    <a href="pages/webhooks.html" class="topbar-nav-link"><i class='bx bx-broadcast'></i> Webhooks</a>
+    <a href="pages/examples.html" class="topbar-nav-link"><i class='bx bx-terminal'></i> Examples</a>
+  </nav>
+  <div class="topbar-right">
+    <div class="topbar-pill"><div class="live-dot"></div>&nbsp;API Online</div>
+    <a href="https://botliy.online" class="btn btn-ghost" target="_blank"><i class='bx bx-link-external'></i> Website</a>
+    <a href="https://botliy.online/bots/new" class="btn btn-amber" target="_blank"><i class='bx bx-plus'></i> Add Bot</a>
+  </div>
+</header>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-title">Overview</div>
+      <a href="index.html" class="nav-link active"><i class='bx bx-home-smile'></i> Introduction</a>
+      <a href="#quickstart" class="nav-link" onclick="setActive(this)"><i class='bx bx-rocket'></i> Quick Start</a>
+      <a href="#concepts" class="nav-link" onclick="setActive(this)"><i class='bx bx-book-open'></i> Key Concepts</a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">Guides</div>
+      <a href="pages/authentication.html" class="nav-link"><i class='bx bx-key'></i> Authentication</a>
+      <a href="pages/authentication.html#ratelimits" class="nav-link"><i class='bx bx-tachometer'></i> Rate Limits</a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">API Reference</div>
+      <a href="pages/endpoints.html#post-stats" class="nav-link">
+        <i class='bx bx-upload'></i> Post Stats
+        <span class="method-tag tag-post">POST</span>
+      </a>
+      <a href="pages/endpoints.html#get-stats" class="nav-link">
+        <i class='bx bx-bar-chart-alt-2'></i> Get Stats
+        <span class="method-tag tag-get">GET</span>
+      </a>
+      <a href="pages/endpoints.html#get-votes" class="nav-link">
+        <i class='bx bx-up-arrow-circle'></i> Get Votes
+        <span class="method-tag tag-get">GET</span>
+      </a>
+      <a href="pages/endpoints.html#get-check" class="nav-link">
+        <i class='bx bx-check-circle'></i> Check Vote
+        <span class="method-tag tag-get">GET</span>
+      </a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-group-title">Webhooks &amp; Examples</div>
+      <a href="pages/webhooks.html" class="nav-link"><i class='bx bx-broadcast'></i> Webhook Events</a>
+      <a href="pages/examples.html#ex-nodejs" class="nav-link"><i class='bx bxl-nodejs'></i> Node.js</a>
+      <a href="pages/examples.html#ex-typescript" class="nav-link"><i class='bx bx-code-alt'></i> TypeScript</a>
+      <a href="pages/examples.html#ex-python" class="nav-link"><i class='bx bxl-python'></i> Python</a>
+      <a href="pages/examples.html#ex-go" class="nav-link"><i class='bx bx-code'></i> Go</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-wrap">
+    <main class="content">
+
+      <!-- PAGE HEADER -->
+      <div class="page-head">
+        <div class="eyebrow"><i class='bx bx-code-curly'></i>&nbsp;REST API · v1 · botliy.online</div>
+        <h1 class="h1">botliy <em>Developer</em> API</h1>
+        <p class="page-desc">
+          The botliy API lets you integrate your Discord bot with the platform — post live server stats,
+          retrieve vote history, check individual votes, and receive real-time webhook events the moment
+          someone votes. All responses are JSON.
+        </p>
+        <div class="url-bar">
+          <span class="url-label">Base URL</span>
+          <span class="url-val">https://botliy.online</span>
+          <button class="copy-url-btn" onclick="copyURL('https://botliy.online',this)">
+            <i class='bx bx-copy'></i> Copy
+          </button>
+        </div>
+        <div class="pill-row">
+          <div class="info-pill"><i class='bx bx-code-alt'></i> Format: <b>JSON</b></div>
+          <div class="info-pill"><i class='bx bx-lock-alt'></i> Auth: <b>Bearer Token</b></div>
+          <div class="info-pill"><i class='bx bx-time-five'></i> Rate Limit: <b>1 req/s per IP</b></div>
+        </div>
+      </div>
+
+      <div class="callout info">
+        <i class='bx bx-support callout-icon'></i>
+        <div>
+          <b>Need help?</b>
+          <span>Reach out in our Discord server's <code>#api-support</code> channel. We typically respond within a few hours.</span>
+        </div>
+      </div>
+
+      <!-- QUICK START -->
+      <div id="quickstart" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-rocket'></i></div>
+          <h2>Quick Start</h2>
+        </div>
+        <p>Get up and running in three steps.</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-n">1</div>
+            <div>
+              <div class="step-title">Submit &amp; get approved</div>
+              <div class="step-body">Add your bot at <a href="https://botliy.online/bots/new" target="_blank">botliy.online/bots/new</a>. Once approved, your API token is available in the bot's edit page under <strong>API Integrations</strong>.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-n">2</div>
+            <div>
+              <div class="step-title">Add the Authorization header</div>
+              <div class="step-body">Include your token on every protected request as <code>Authorization: your_token</code>. See <a href="pages/authentication.html">Authentication →</a></div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-n">3</div>
+            <div>
+              <div class="step-title">Post stats &amp; set up a webhook</div>
+              <div class="step-body">Use a 30-minute interval to <code>POST /api/bots/:id/stats</code> and configure a webhook URL on your bot's edit page to receive live vote events.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KEY CONCEPTS -->
+      <div id="concepts" class="section">
+        <div class="sec-head">
+          <div class="sec-icon"><i class='bx bx-book-open'></i></div>
+          <h2>Key Concepts</h2>
+        </div>
+        <p>Before diving in, here are the fundamental ideas behind the botliy API:</p>
+        <ul>
+          <li><strong>Bot ID</strong> — Your bot's Discord application/client snowflake ID. Used as the <code>:id</code> path parameter in all endpoints.</li>
+          <li><strong>API Token</strong> — A secret token generated per bot, used to authenticate write requests. Never expose this in client-side code.</li>
+          <li><strong>Webhook Secret</strong> — A separate secret used to verify incoming vote event payloads from botliy's servers.</li>
+          <li><strong>Votes</strong> — Users can vote for your bot once every 12 hours. The API tracks and exposes this data in real time.</li>
+        </ul>
+        <div class="callout warn">
+          <i class='bx bx-error callout-icon'></i>
+          <div>
+            <b>Keep your tokens secret</b>
+            <span>Never commit your API Token or Webhook Secret to source control. Use environment variables or a secrets manager in production.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGER -->
+      <div class="pager">
+        <div></div>
+        <a href="pages/authentication.html" class="pager-card next">
+          <div class="pager-dir">Next →</div>
+          <div class="pager-title">Authentication &amp; Rate Limits</div>
+        </a>
+      </div>
+
+    </main>
+
+    <!-- TOC -->
+    <nav class="toc">
+      <div class="toc-head">On this page</div>
+      <a href="#quickstart" class="toc-item">Quick Start</a>
+      <a href="#concepts" class="toc-item">Key Concepts</a>
+    </nav>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-brand">
+    <div style="width:26px;height:26px;background:var(--amber);border-radius:7px;display:flex;align-items:center;justify-content:center;">
+      <i class='bx bx-bot' style="font-size:13px;color:var(--ink)"></i>
+    </div>
+    botliy Developer Docs
+  </div>
+  <div class="footer-links">
+    <a href="https://botliy.online" class="footer-link" target="_blank">Website</a>
+    <a href="https://botliy.online/bots/new" class="footer-link" target="_blank">Add Bot</a>
+    <a href="#" class="footer-link">Discord</a>
+    <a href="#" class="footer-link">Status</a>
+  </div>
+  <div class="footer-copy">© 2026 botliy · REST API v1</div>
+</footer>
+
+<script src="assets/docs.js"></script>
+</body>
+</html>
